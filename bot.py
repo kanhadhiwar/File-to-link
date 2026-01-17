@@ -2,10 +2,10 @@ from pyrogram import Client, filters
 import uuid, time
 from firebase_db import html_ref
 
-API_ID = 123456
-API_HASH = "YOUR_API_HASH"
-BOT_TOKEN = "YOUR_BOT_TOKEN"
-CHANNEL_ID = -1001234567890
+API_ID = 37454234
+API_HASH = "9d14b26020c10dab5e3e82c211328ae0"
+BOT_TOKEN = "8420672819:AAEyOOPD4gmJWgYNhioojQpX02yw80lpjIs"
+CHANNEL_ID = --1003286014232
 DOMAIN = "https://your-domain.com"
 
 app = Client(
