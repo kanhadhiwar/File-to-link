@@ -1,33 +1,23 @@
 from pyrogram import Client, filters
-import json, uuid
+import uuid, time
+from firebase_db import html_ref
 
-BOT_TOKEN = "YOUR_BOT_TOKEN"
 API_ID = 123456
 API_HASH = "YOUR_API_HASH"
+BOT_TOKEN = "YOUR_BOT_TOKEN"
 CHANNEL_ID = -1001234567890
 DOMAIN = "https://your-domain.com"
 
 app = Client(
-    "html_bot",
+    "html_upload_bot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
 
-def load_db():
-    try:
-        with open("data.json", "r") as f:
-            return json.load(f)
-    except:
-        return {}
-
-def save_db(db):
-    with open("data.json", "w") as f:
-        json.dump(db, f)
-
 @app.on_message(filters.document)
-async def handle_html(client, message):
-    if not message.document.file_name.endswith(".html"):
+async def upload_html(client, message):
+    if not message.document.file_name.lower().endswith(".html"):
         await message.reply("❌ Sirf .html file allowed hai")
         return
 
@@ -35,11 +25,16 @@ async def handle_html(client, message):
     file_id = sent.document.file_id
 
     key = uuid.uuid4().hex[:8]
-    db = load_db()
-    db[key] = file_id
-    save_db(db)
 
-    link = f"{DOMAIN}/view/{key}"
-    await message.reply(f"✅ HTML uploaded\n🔗 Link:\n{link}")
+    html_ref.child(key).set({
+        "file_id": file_id,
+        "created_at": int(time.time())
+    })
 
+    await message.reply(
+        f"✅ HTML uploaded successfully\n\n"
+        f"🔗 Link:\n{DOMAIN}/view/{key}"
+    )
+
+print("🤖 Bot started")
 app.run()
