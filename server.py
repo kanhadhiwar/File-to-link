@@ -6,7 +6,7 @@ API_ID = 37454234
 API_HASH = "9d14b26020c10dab5e3e82c211328ae0"
 BOT_TOKEN = "8420672819:AAEyOOPD4gmJWgYNhioojQpX02yw80lpjIs"
 CHANNEL_ID =-1003286014232
-DOMAIN = "https://your-domain.com"
+DOMAIN = "https://file-to-link-qdar.onrender.com"
 
 app = Client(
     "html_upload_bot",
