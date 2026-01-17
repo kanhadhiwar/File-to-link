@@ -1,38 +1,40 @@
-from flask import Flask, abort, Response
-from pyrogram import Client
-import json, asyncio
+from pyrogram import Client, filters
+import uuid, time
+from firebase_db import html_ref
 
 API_ID = 123456
 API_HASH = "YOUR_API_HASH"
 BOT_TOKEN = "YOUR_BOT_TOKEN"
+CHANNEL_ID = -1001234567890
+DOMAIN = "https://your-domain.com"
 
-app = Flask(__name__)
-
-tg = Client(
-    "server",
+app = Client(
+    "html_upload_bot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
 
-def load_db():
-    with open("data.json") as f:
-        return json.load(f)
+@app.on_message(filters.document)
+async def upload_html(client, message):
+    if not message.document.file_name.lower().endswith(".html"):
+        await message.reply("❌ Sirf .html file allowed hai")
+        return
 
-@app.route("/view/<key>")
-def view_html(key):
-    db = load_db()
-    if key not in db:
-        abort(404)
+    sent = await message.copy(CHANNEL_ID)
+    file_id = sent.document.file_id
 
-    async def fetch():
-        await tg.start()
-        msg = await tg.get_messages("me", file_id=db[key])
-        file = await msg.download(in_memory=True)
-        return file.getvalue()
+    key = uuid.uuid4().hex[:8]
 
-    html = asyncio.run(fetch())
-    return Response(html, mimetype="text/html")
+    html_ref.child(key).set({
+        "file_id": file_id,
+        "created_at": int(time.time())
+    })
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    await message.reply(
+        f"✅ HTML uploaded successfully\n\n"
+        f"🔗 Link:\n{DOMAIN}/view/{key}"
+    )
+
+print("🤖 Bot started")
+app.run()
