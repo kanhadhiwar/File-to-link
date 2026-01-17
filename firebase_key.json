@@ -1,12 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials
 
-# Service account key (same folder me rakho)
-cred = credentials.Certificate("firebase_key.json")
-
-firebase_admin.initialize_app(cred, {
-    "databaseURL": "https://html-e256d-default-rtdb.asia-southeast1.firebasedatabase.app/"
-})
-
-# Reference (example)
-html_ref = db.reference("html_pages")
+cred = credentials.Certificate("path/to/serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
